@@ -51,6 +51,12 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             get { return _pluginSettings.GetString("FlickrAuthToken", string.Empty); }
             set { _pluginSettings.SetString("FlickrAuthToken", value); }
         }
+
+        public int DefaultImageSize
+        {
+            get { return _pluginSettings.GetInt("DefaultImageSize", (int)ImageSize.Medium); }
+            set { _pluginSettings.SetInt("DefaultImageSize", value); }
+        }
         #endregion
     }
 }
