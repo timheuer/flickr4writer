@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using FlickrNet;
 using System.Threading;
 using System.IO;
+using System.Configuration;
 
 namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
@@ -771,7 +772,9 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         public InsertFlickrImageForm(FlickrContext context)
         {
             InitializeComponent();
+            _ctx = context;
             this.dropDownAlignment.SelectedIndex = 0;
+            _selectedImageSize = (ImageSize)context.DefaultImageSize;
             this.dropDownImageSizes.SelectedIndex = (int)_selectedImageSize;
 
             textboxFlickrUserName.Focus();
@@ -782,8 +785,6 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
             authStatusLabel.Text = string.Format("Authorized ({0})", _authUserName);
             _authToken = context.FlickrAuthToken;
-
-            _ctx = context;
 
             // TODO: Consider threaded start of init
             System.Threading.Thread init = new System.Threading.Thread(new System.Threading.ThreadStart(EnsureFlickrNet));
@@ -864,6 +865,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         {
             // Keep the member variable in sync with the combo
             _selectedImageSize = (ImageSize)this.dropDownImageSizes.SelectedIndex;
+            _ctx.DefaultImageSize = (int)_selectedImageSize;
         }
 
         /// <summary>
