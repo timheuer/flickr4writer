@@ -35,4 +35,5 @@ download/
 AppPackages/
 /DropNet.CLI/possantest.bat
 /src/Setup/Setup
+/src/Setup/Flickr4WriterSetup
 packages
