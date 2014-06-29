@@ -10,6 +10,13 @@ Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "Flickr4WriterSetup", "Setup
 		{39C12183-FAE3-48E2-80FC-8D3ADDEE5942} = {39C12183-FAE3-48E2-80FC-8D3ADDEE5942}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{83D2B3AF-E5C9-4AC3-9C91-8EAE71671303}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		All|Any CPU = All|Any CPU
