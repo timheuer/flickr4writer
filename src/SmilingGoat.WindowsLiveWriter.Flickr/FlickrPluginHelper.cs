@@ -1,11 +1,15 @@
 using System;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.Drawing;
-using FlickrNet;
+using System.IO;
+using System.Net;
+using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing.Drawing2D;
 using WindowsLive.Writer.Api;
+using FlickrNet;
+using SmilingGoat.WindowsLiveWriter.Flickr.Properties;
 
 namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
@@ -15,24 +19,23 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         {
             try
             {
-                System.Diagnostics.Process.Start(url);
+                Process.Start(url);
             }
             catch (Exception ex)
             {
-                WindowsLive.Writer.Api.PluginDiagnostics.DisplayUnexpectedException(ex);
+                PluginDiagnostics.DisplayUnexpectedException(ex);
             }
         }
 
         internal static FlickrNet.Flickr GetFlickrProxy()
         {
             FlickrNet.Flickr.CacheDisabled = true;
-            FlickrNet.Flickr fproxy = null;
 
-            System.Resources.ResourceManager mgr = new System.Resources.ResourceManager(typeof(SmilingGoat.WindowsLiveWriter.Flickr.Properties.Resources));
-            fproxy = new FlickrNet.Flickr(mgr.GetString("ApiKey"), mgr.GetString("SharedSecret"));
+            ResourceManager mgr = new ResourceManager(typeof(Resources));
+            FlickrNet.Flickr fproxy = new FlickrNet.Flickr(mgr.GetString("ApiKey"), mgr.GetString("SharedSecret"));
 
             // Leverage proxy settings if they are there.
-            System.Net.WebProxy proxySettings = (System.Net.WebProxy)WindowsLive.Writer.Api.PluginHttpRequest.GetWriterProxy();
+            WebProxy proxySettings = (WebProxy)PluginHttpRequest.GetWriterProxy();
             if (proxySettings != null)
             {
                 fproxy.Proxy = proxySettings;
@@ -45,11 +48,11 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         {
             Image theImage;
 
-            WindowsLive.Writer.Api.PluginHttpRequest http = new WindowsLive.Writer.Api.PluginHttpRequest(url);
+            PluginHttpRequest http = new PluginHttpRequest(url);
             http.AllowAutoRedirect = true;
-            http.CacheLevel = WindowsLive.Writer.Api.HttpRequestCacheLevel.BypassCache;
+            http.CacheLevel = HttpRequestCacheLevel.BypassCache;
 
-            using (System.IO.Stream imageStream = http.GetResponse())
+            using (Stream imageStream = http.GetResponse())
             {
                 theImage = Image.FromStream(imageStream);
             }
@@ -59,11 +62,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
         internal static string CleanTagFilter(string tagList)
         {
-            string cleanedTagList = string.Empty;
-            // TODO: use regex here
-
             // remove spaces
-            cleanedTagList = tagList.Replace(" ", string.Empty);
+            string cleanedTagList = tagList.Replace(" ", string.Empty);
 
             // replace semicolons with commas
             cleanedTagList = cleanedTagList.Replace(";", ",");
@@ -71,10 +71,9 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             return cleanedTagList;
         }
 
-        internal static string GenerateFlickrHtml(FlickrNet.Photo selectedPhoto, string imageUrl, string cssClass, string border, string vSpace, string hSpace, string alignment, bool hyperLink, string userId)
+        internal static string GenerateFlickrHtml(Photo selectedPhoto, string imageUrl, string cssClass, string border, string vSpace, string hSpace, string alignment, bool hyperLink, string userId)
         {
             StringBuilder imageTag = new StringBuilder();
-            string imageHtml = string.Empty;
 
             imageTag.Append("<img "); // begin tag
             imageTag.Append(string.Format("src=\"{0}\" ", HtmlServices.HtmlEncode(imageUrl)));
@@ -103,7 +102,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
             imageTag.Append("/>"); // end tag XHTML
 
-            imageHtml = imageTag.ToString();
+            string imageHtml = imageTag.ToString();
 
             if (hyperLink)
             {
@@ -125,9 +124,9 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             return Regex.Replace(url, photosetUrlPattern, string.Format("photos/{0}/", userId));
         }
         
-        internal static FlickrNet.FoundUser FindUserByEmailOrName(FlickrNet.Flickr flickrProxy, string criteria)
+        internal static FoundUser FindUserByEmailOrName(FlickrNet.Flickr flickrProxy, string criteria)
         {
-            FlickrNet.FoundUser user;
+            FoundUser user;
 
             Regex rxp = new Regex("(?<user>[^@]+)@(?<host>.+)");
 
@@ -137,7 +136,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             }
             else
             {
-                user = flickrProxy.PeopleFindByUsername(criteria);
+                user = flickrProxy.PeopleFindByUserName(criteria);
             }
 
             return user;
@@ -151,11 +150,11 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             int num4 = 0;
             int num5 = offset;
             int num6 = offset;
-            float single1 = 0f;
-            float single2 = 0f;
-            float single3 = 0f;
-            single2 = ((float)width) / ((float)num1);
-            single3 = ((float)height) / ((float)num2);
+            float single1;
+            float single2;
+            float single3;
+            single2 = width / ((float)num1);
+            single3 = height / ((float)num2);
             if (single3 < single2)
             {
                 single1 = single3;

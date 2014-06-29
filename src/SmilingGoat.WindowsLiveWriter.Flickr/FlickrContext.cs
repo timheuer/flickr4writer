@@ -1,6 +1,4 @@
-using System;
 using WindowsLive.Writer.Api;
-using System.ComponentModel;
 
 namespace SmilingGoat.WindowsLiveWriter.Flickr
 {

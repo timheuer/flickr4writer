@@ -34,3 +34,4 @@ _ReSharper*/
 download/
 AppPackages/
 /DropNet.CLI/possantest.bat
+/src/Setup/Setup

@@ -1,13 +1,9 @@
 using System;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using FlickrNet;
-using System.Threading;
 using System.IO;
-using System.Configuration;
 
 namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
@@ -803,11 +799,11 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             {
                 FlickrNet.FoundUser user = flickrProxy.TestLogin();
                 _authUserId = user.UserId;
-                textboxFlickrUserName.Text = user.Username;
-                _ctx.FlickrAuthUserName = user.Username;
+                textboxFlickrUserName.Text = user.UserName;
+                _ctx.FlickrAuthUserName = user.UserName;
                 _ctx.FlickrAuthUserId = _authUserId;
 
-                authStatusLabel.Text = string.Format("Authorized ({0})", user.Username);
+                authStatusLabel.Text = string.Format("Authorized ({0})", user.UserName);
             }
         }
 
@@ -1159,11 +1155,11 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                         photosetList.Items.Clear();
                     });
 
-                    Photosets sets = flickrProxy.PhotosetsGetList(_userId);
+                    PhotosetCollection sets = flickrProxy.PhotosetsGetList(_userId);
 
                     ExecuteOnUIThread(delegate
                     {
-                        photosetList.DataSource = sets.PhotosetCollection;
+                        photosetList.DataSource = sets;
                         photosetList.ValueMember = "PhotosetId";
                         photosetList.DisplayMember = "Title";
                     });
@@ -1188,6 +1184,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         {
             imageListing.Images.Clear();
             retrievedImageList.Items.Clear();
+            statusPictureCount.Text = "Image Count: 0";
+            statusPage.Text = string.Empty;
         }
 
         private void DrawRetrievedImages()
@@ -1212,13 +1210,13 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
                 // ensure only CC licensed or No known license photos
                 // values from http://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html
-                options.AddLicense(1); // non-commercial share alike
-                options.AddLicense(2); // non-commercial
-                options.AddLicense(3); // non-commercial no-derivs
-                options.AddLicense(4); // attribution
-                options.AddLicense(5); // attribution share-alike
-                options.AddLicense(6); // attribution no-derivs
-                options.AddLicense(7); // no known license
+                options.Licenses.Add(LicenseType.AttributionNoncommercialShareAlikeCC); // non-commercial share alike
+                options.Licenses.Add(LicenseType.AttributionNoncommercialCC); // non-commercial
+                options.Licenses.Add(LicenseType.AttributionNoncommercialNoDerivativesCC); // non-commercial no-derivs
+                options.Licenses.Add(LicenseType.AttributionCC); // attribution
+                options.Licenses.Add(LicenseType.AttributionShareAlikeCC); // attribution share-alike
+                options.Licenses.Add(LicenseType.AttributionNoDerivativesCC); // attribution no-derivs
+                options.Licenses.Add(LicenseType.NoKnownCopyrightRestrictions); // no known license
             }
 
             options.Extras = PhotoSearchExtras.All;
@@ -1244,38 +1242,38 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                 ClearImageList();
             });
 
-            FlickrNet.Photos fPhotos = null;
+            FlickrNet.PhotoCollection fPhotos = null;
 
             try
             {
                 if (!string.IsNullOrEmpty(photoSetId))
                 {
-                    Photo[] photoArray = flickrProxy.PhotosetsGetPhotos(photoSetId).PhotoCollection;
+                    PhotosetPhotoCollection photoArray = flickrProxy.PhotosetsGetPhotos(photoSetId);
                     if (imageProcessor.CancellationPending)
                         return;
-                    Photos ps = new Photos();
-                    ps.PhotoCollection = photoArray;
-                    fPhotos = ps;
 
-                    //for (int i = 0; i < photoArray.Length; i++)
-                    //{
-                    //    ps.PhotoCollection.Add(photoArray[i]);
-                    //}
-                    //fPhotos = ps;
+                    PhotoCollection ps = new PhotoCollection();
+
+                    for (int i = 0; i < photoArray.Count; i++)
+                    {
+                        ps.Add(photoArray[i]);
+                    }
+                    fPhotos = ps;
                 }
                 else
                 {
                     fPhotos = flickrProxy.PhotosSearch(options);
+
                     if (imageProcessor.CancellationPending)
                         return;
                 }
 
                 #region Smoke Test for CanBlog Flag
                 // check for canblog flag
-                Photo smokeTest = fPhotos.PhotoCollection[0];
+                Photo smokeTest = fPhotos[0];
                 PhotoInfo info = flickrProxy.PhotosGetInfo(smokeTest.PhotoId);
 
-                if (info.Usage.CanBlog.ToLower() == "0")
+                if (!info.CanBlog)
                 {
                     MessageBox.Show("This user has prevented blogging of their content.", "Blogging Disabled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
@@ -1286,15 +1284,15 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                 {
                     if (imageProcessor.CancellationPending)
                         return;
-                    if (fPhotos.TotalPages == 0)
+                    if (fPhotos.Pages == 0)
                     {
                         statusPage.Text = "";
-                        statusPictureCount.Text = string.Format("Image Count: {0}", fPhotos.PhotoCollection.Length.ToString());
+                        statusPictureCount.Text = string.Format("Image Count: {0}", fPhotos.Count.ToString());
                     }
                     else
                     {
-                        statusPage.Text = string.Format("Page {0} of {1}", _currentPage.ToString(), fPhotos.TotalPages.ToString());
-                        statusPictureCount.Text = string.Format("Image Count: {0}", fPhotos.TotalPhotos.ToString());
+                        statusPage.Text = string.Format("Page {0} of {1}", _currentPage.ToString(), fPhotos.Pages.ToString());
+                        statusPictureCount.Text = string.Format("Image Count: {0}", fPhotos.Count.ToString());
                     }
                 });
                 if (imageProcessor.CancellationPending)
@@ -1312,19 +1310,19 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                 }
             }
 
-            _totalPages = fPhotos.TotalPages;
+            _totalPages = fPhotos.Pages;
             ExecuteOnUIThread(delegate
             {
                 pagePrevious.Enabled = _totalPages > 1;
                 pageNext.Enabled = _totalPages > 1;
-                progressBar.Maximum = fPhotos.PhotoCollection.Length;
+                progressBar.Maximum = fPhotos.Count;
             });
 
-            if (fPhotos.PhotoCollection.Length > 0)
+            if (fPhotos.Count > 0)
             {
                 _images = true;
 
-                for (int i = 0; i < fPhotos.PhotoCollection.Length; i++)
+                for (int i = 0; i < fPhotos.Count; i++)
                 {
                     if (imageProcessor.CancellationPending)
                         break;
@@ -1332,7 +1330,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                     ListViewItem item = null;
 
                     // HTTP request must happen on background thread
-                    WindowsLive.Writer.Api.PluginHttpRequest http = new WindowsLive.Writer.Api.PluginHttpRequest(fPhotos.PhotoCollection[i].ThumbnailUrl);
+                    WindowsLive.Writer.Api.PluginHttpRequest http = new WindowsLive.Writer.Api.PluginHttpRequest(fPhotos[i].ThumbnailUrl);
                     http.AllowAutoRedirect = true;
                     http.CacheLevel = WindowsLive.Writer.Api.HttpRequestCacheLevel.BypassCache;
 
@@ -1356,8 +1354,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                         img = FlickrPluginHelper.ScaleToFixedSize(img, imageListing.ImageSize.Width, imageListing.ImageSize.Height, 0, Color.Transparent);
                         imageListing.Images.Add(img);
                         item = new ListViewItem();
-                        item.Tag = fPhotos.PhotoCollection[i];
-                        item.Text = fPhotos.PhotoCollection[i].Title;
+                        item.Tag = fPhotos[i];
+                        item.Text = fPhotos[i].Title;
                         item.ImageIndex = i;
                         retrievedImageList.Items.Add(item);
                     });

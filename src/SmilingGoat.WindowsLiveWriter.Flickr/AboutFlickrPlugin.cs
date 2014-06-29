@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Globalization;
@@ -18,12 +16,18 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             //  Change assembly information settings for your application through either:
             //  - Project->Properties->Application->Assembly Information
             //  - AssemblyInfo.cs
-            this.Text = String.Format(CultureInfo.InvariantCulture,"About {0}", AssemblyProduct);
-            this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format(CultureInfo.InvariantCulture,"Version {0}", AssemblyVersion);
-            this.labelCopyright.Text = AssemblyCopyright;
-            this.labelCompanyName.Text = AssemblyCompany;
-            this.textBoxDescription.Text = AssemblyDescription;
+            Text = String.Format(CultureInfo.InvariantCulture,"About {0}", AssemblyProduct);
+            labelProductName.Text = AssemblyProduct;
+            labelVersion.Text = String.Format(CultureInfo.InvariantCulture,"Version {0}", AssemblyVersion);
+            labelCopyright.Text = AssemblyCopyright;
+            labelCompanyName.Text = AssemblyCompany;
+            textBoxDescription.Text = AssemblyDescription;
+        }
+
+        public override sealed string Text
+        {
+            get { return base.Text; }
+            set { base.Text = value; }
         }
 
         #region Assembly Attribute Accessors
@@ -43,7 +47,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                         return titleAttribute.Title;
                 }
                 // If there was no Title attribute, or if the Title attribute was the empty string, return the .exe name
-                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+                return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
             }
         }
 
