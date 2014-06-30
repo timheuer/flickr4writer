@@ -9,10 +9,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
     public partial class AuthForm : Form
     {
-        private FlickrNet.Flickr _proxy;
-        private string _tempFrob;
-
-        public string Frob { get; set; }
+        private readonly FlickrNet.Flickr _proxy;
+        public object Frob { get; private set; }
 
         public AuthForm(FlickrNet.Flickr flickrProxy)
         {
@@ -22,20 +20,18 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
         private void authBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            _tempFrob = _proxy.AuthGetFrob();
-            string flickrUrl = _proxy.AuthCalcUrl(_tempFrob, AuthLevel.Write);
-            Process.Start(flickrUrl);
+            var token = _proxy.OAuthGetRequestToken("oob");
+            var authUrl = _proxy.OAuthCalculateAuthorizationUrl(token.Token, AuthLevel.Write);
+            Process.Start(authUrl);
             Thread.Sleep(2000);
-            e.Result = _tempFrob;
+            e.Result = token;
         }
 
         private void authBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (!e.Cancelled)
-            {
-                Frob = (string)e.Result;
-                DialogResult = DialogResult.OK;
-            }
+            if (e.Cancelled) return;
+            Frob = e.Result;
+            DialogResult = DialogResult.OK;
         }
 
         private void button1_Click(object sender, EventArgs e)

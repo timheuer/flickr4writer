@@ -792,19 +792,18 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             if (flickrProxy == null)
             {
                 flickrProxy = FlickrPluginHelper.GetFlickrProxy();
-                flickrProxy.AuthToken = _authToken;
+                flickrProxy.OAuthAccessToken = _authToken;
             }
 
-            if (string.IsNullOrEmpty(_authUserId) || string.IsNullOrEmpty(_authUserName))
-            {
-                FlickrNet.FoundUser user = flickrProxy.TestLogin();
-                _authUserId = user.UserId;
-                textboxFlickrUserName.Text = user.UserName;
-                _ctx.FlickrAuthUserName = user.UserName;
-                _ctx.FlickrAuthUserId = _authUserId;
+            if (!string.IsNullOrEmpty(_authUserId) && !string.IsNullOrEmpty(_authUserName)) return;
 
-                authStatusLabel.Text = string.Format("Authorized ({0})", user.UserName);
-            }
+            FlickrNet.FoundUser user = flickrProxy.TestLogin();
+            _authUserId = user.UserId;
+            textboxFlickrUserName.Text = user.UserName;
+            _ctx.FlickrAuthUserName = user.UserName;
+            _ctx.FlickrAuthUserId = _authUserId;
+
+            authStatusLabel.Text = string.Format("Authorized ({0})", user.UserName);
         }
 
         #endregion
@@ -1263,6 +1262,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                 else
                 {
                     fPhotos = flickrProxy.PhotosSearch(options);
+                    if (fPhotos.Count < 1)
+                        UpdateStatus("No results found");
 
                     if (imageProcessor.CancellationPending)
                         return;

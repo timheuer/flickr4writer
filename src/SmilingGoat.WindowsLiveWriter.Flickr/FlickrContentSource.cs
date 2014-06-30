@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices.ComTypes;
-using System.Windows.Forms.VisualStyles;
 using WindowsLive.Writer.Api;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -34,7 +31,10 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                 string photoId = m.Groups["id"].Value;
 
                 // get photo
+                FlickrContext context = new FlickrContext(Options);
                 FlickrNet.Flickr flickrProxy = FlickrPluginHelper.GetFlickrProxy();
+                flickrProxy.OAuthAccessToken = context.FlickrAuthToken;
+                flickrProxy.OAuthAccessTokenSecret = context.FlickrAuthTokenSecret;
 
                 PhotoInfo photo = flickrProxy.PhotosGetInfo(photoId);
 
@@ -72,8 +72,6 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         #region WLW Overrides
         public override DialogResult CreateContent(IWin32Window dialogOwner, ref string newContent)
         {
-            DialogResult result;
-            DoWorkEventHandler handler = null;
             Auth validAuthToken = null;
             FlickrContext context = new FlickrContext(Options);
             _token = context.FlickrAuthToken;
@@ -84,18 +82,23 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             {
                 using (VerifyAuth vauth = new VerifyAuth())
                 {
-                    handler = delegate
+                    DoWorkEventHandler handler = delegate
                     {
                         FlickrNet.Flickr fp = FlickrPluginHelper.GetFlickrProxy();
+                        fp.OAuthAccessTokenSecret = context.FlickrAuthTokenSecret;
+                        fp.OAuthAccessToken = context.FlickrAuthToken;
 
                         try
                         {
-                            validAuthToken = fp.AuthCheckToken(_token);
+                            validAuthToken = fp.AuthOAuthCheckToken();
                         }
                         catch (FlickrNet.Exceptions.LoginFailedInvalidTokenException)
                         {
                             // token that was stored was bad -- re-auth
                             _token = AuthManager.Authenticate(dialogOwner, context);
+                            fp.OAuthAccessToken = context.FlickrAuthToken;
+                            fp.OAuthAccessTokenSecret = context.FlickrAuthTokenSecret;
+                            validAuthToken = fp.AuthOAuthCheckToken();
                         }
 
                         if (validAuthToken != null)
@@ -104,7 +107,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                         }
                     };
                     vauth.DoWork += handler;
-                    result = vauth.ShowDialog(dialogOwner);
+                    DialogResult result = vauth.ShowDialog(dialogOwner);
                     if (result != DialogResult.OK)
                     {
                         return result;

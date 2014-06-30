@@ -33,7 +33,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
             ResourceManager mgr = new ResourceManager(typeof(Resources));
             FlickrNet.Flickr fproxy = new FlickrNet.Flickr(mgr.GetString("ApiKey"), mgr.GetString("SharedSecret"));
-
+            
             // Leverage proxy settings if they are there.
             WebProxy proxySettings = (WebProxy)PluginHttpRequest.GetWriterProxy();
             if (proxySettings != null)

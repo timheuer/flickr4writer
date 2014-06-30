@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Drawing.Text;
 using System.Windows.Forms;
 using System.Threading;
 using FlickrNet;
@@ -12,22 +9,23 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
     public partial class CompletedAuth : Form
     {
-        public string Frob { get; set; }
-        public string AuthToken { get; set; }
-        public string AuthUserId { get; set; }
-        private FlickrNet.Flickr _proxy;
+        private object Frob { get; set; }
+        public string AuthToken { get; private set; }
+        public string AuthTokenSecret { get; private set; }
+        private readonly FlickrNet.Flickr _proxy;
+        private string _verifierCode;
 
-        public CompletedAuth(FlickrNet.Flickr flickrProxy, string frob)
+        public CompletedAuth(FlickrNet.Flickr flickrProxy, object frob)
         {
             InitializeComponent();
             _proxy = flickrProxy;
-            this.Frob = frob;
-            Load += new EventHandler(CompletedAuth_Load);
+            Frob = frob;
+            Load += CompletedAuth_Load;
         }
 
         void CompletedAuth_Load(object sender, EventArgs e)
         {
-            completedAuthWorker.RunWorkerAsync();
+            VerifierCode.Focus();
         }
 
         private void completedAuthWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -36,19 +34,19 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             {
                 try
                 {
-
-                    FlickrNet.Auth token = _proxy.AuthGetToken(this.Frob);
+                    var token = _proxy.OAuthGetAccessToken((OAuthRequestToken) Frob, _verifierCode);
+                    
                     if (token == null)
                     {
                         Thread.Sleep(2000);
                     }
                     else
                     {
-                        e.Result = token.Token;
+                        e.Result = token;
                         break;
                     }
                 }
-                catch (FlickrNet.FlickrApiException ex)
+                catch (FlickrApiException ex)
                 {
                     if (ex.Code == 108)
                     {
@@ -60,8 +58,15 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
         private void completedAuthWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            this.AuthToken = (string)e.Result;
-            base.DialogResult = DialogResult.OK;
+            AuthToken = ((OAuthAccessToken) e.Result).Token;
+            AuthTokenSecret = ((OAuthAccessToken)e.Result).TokenSecret;
+            DialogResult = DialogResult.OK;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            _verifierCode = VerifierCode.Text;
+            completedAuthWorker.RunWorkerAsync();
         }
     }
 }
