@@ -1,8 +1,11 @@
-using WindowsLive.Writer.Api;
+using FlickrNet;
+using log4net;
+using log4net.Config;
+using System.ComponentModel;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.ComponentModel;
-using FlickrNet;
+using WindowsLive.Writer.Api;
 
 namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
@@ -17,6 +20,18 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         private const string PHOTO_REGEX_URL = @"^http://(www\.)?flickr\.com/photos/[^/]+/(?<id>[\d]+)($|/)";
 
         private string _token;
+
+        private static readonly ILog Logger =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
+        static FlickrContentSource()
+        {
+            FileInfo logConfig =
+                new FileInfo(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
+                    "log4net.config"));
+
+            XmlConfigurator.ConfigureAndWatch(logConfig);
+        }
 
         public override void CreateContentFromUrl(string url, ref string title, ref string newContent)
         {
@@ -88,17 +103,22 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                         fp.OAuthAccessTokenSecret = context.FlickrAuthTokenSecret;
                         fp.OAuthAccessToken = context.FlickrAuthToken;
 
+                        Logger.DebugFormat("Auth Token: {0}", context.FlickrAuthToken);
+                        Logger.DebugFormat("Auth Secret: {0}", context.FlickrAuthTokenSecret);
+
                         try
                         {
                             validAuthToken = fp.AuthOAuthCheckToken();
                         }
-                        catch (FlickrNet.Exceptions.LoginFailedInvalidTokenException)
+                        catch (FlickrNet.Exceptions.LoginFailedInvalidTokenException ex)
                         {
                             // token that was stored was bad -- re-auth
                             _token = AuthManager.Authenticate(dialogOwner, context);
                             fp.OAuthAccessToken = context.FlickrAuthToken;
                             fp.OAuthAccessTokenSecret = context.FlickrAuthTokenSecret;
                             validAuthToken = fp.AuthOAuthCheckToken();
+
+                            PluginDiagnostics.LogException(ex, "Failure in Auth Verification");
                         }
 
                         if (validAuthToken != null)

@@ -13,6 +13,16 @@ using SmilingGoat.WindowsLiveWriter.Flickr.Properties;
 
 namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
+    class SpecialFolderPatternConverter : log4net.Util.PatternConverter
+    {
+        protected override void Convert(TextWriter writer, object state)
+        {
+            Environment.SpecialFolder specialFolder =
+                (Environment.SpecialFolder) Enum.Parse(typeof (Environment.SpecialFolder), base.Option, true);
+            writer.Write(Environment.GetFolderPath(specialFolder));
+        }
+    }
+
     class FlickrPluginHelper
     {
         internal static void GotoUrl(string url)

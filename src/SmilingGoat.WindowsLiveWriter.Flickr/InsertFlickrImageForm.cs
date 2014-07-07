@@ -4,6 +4,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using FlickrNet;
 using System.IO;
+using WindowsLive.Writer.Api;
+using log4net;
+using log4net.Config;
 
 namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
@@ -17,6 +20,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         private const int PER_PAGE = 8;
         private const string FLICKR_SIGNUP = "http://www.flickr.com/signup";
         private const string FLICKR_URL = "http://www.flickr.com";
+        private static readonly ILog Logger =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
 
         #region Member Variables
@@ -76,6 +81,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         private string _authUserId;
         private string _authUserName;
         private FlickrContext _ctx;
+        private string _userName;
         #endregion
 
         #region Public Properties
@@ -789,6 +795,15 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             init.Start();
         }
 
+        static InsertFlickrImageForm()
+        {
+            FileInfo logConfig =
+                    new FileInfo(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
+                        "log4net.config"));
+
+            XmlConfigurator.ConfigureAndWatch(logConfig);    
+        }
+
         private void EnsureFlickrNet()
         {
             if (flickrProxy == null)
@@ -808,6 +823,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             }
             catch (OAuthException ex)
             {
+                Logger.ErrorFormat("OAuth Failure: {0}", ex.FullResponse);
+
                 authStatusLabel.Text = @"Authorization is bad, try again";
                 MessageBox.Show(string.Format("Authorization is corrupt, please try again from Plugin Settings\n\n{0}", ex.Message),
                     @"Failed Authorization", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1088,6 +1105,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
                         user = FlickrPluginHelper.FindUserByEmailOrName(flickrProxy, textboxFlickrUserName.Text.Trim());
                         _userId = user.UserId;
+                        _userName = user.UserName;
 
                         return true;
                     }
@@ -1218,6 +1236,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             options.PerPage = PER_PAGE;
             options.Page = _currentPage;
 
+            Logger.WarnFormat("Auth User: {0} ({1}), Searching on user: {2} ({3})", _authUserId, _authUserName, _userId, _userName);
+
             // if the authorized user is searching own photos, disregard all rules
             if (_authUserId != _userId)
             {
@@ -1280,7 +1300,10 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                 {
                     fPhotos = flickrProxy.PhotosSearch(options);
                     if (fPhotos.Count < 1)
+                    {
                         UpdateStatus("No results found");
+                        return;
+                    }
 
                     if (imageProcessor.CancellationPending)
                         return;
@@ -1293,7 +1316,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
                 if (!info.CanBlog)
                 {
-                    MessageBox.Show("This user has prevented blogging of their content.", "Blogging Disabled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Logger.WarnFormat("A smoke test showed first image in result cannot be blogged: {0}", info.Title);
+                    MessageBox.Show(@"This user has prevented blogging of their content.", @"Blogging Disabled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 } 
                 #endregion
@@ -1318,6 +1342,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             }
             catch (FlickrNet.FlickrApiException ex)
             {
+                PluginDiagnostics.LogException(ex, "API Failure during Image fetch");
+
                 if (ex.Code == 9999)
                 {
                     ExecuteOnUIThread(delegate

@@ -340,6 +340,7 @@
 		<col def="S0">ISDotNetInstallerArgsUninstall</col>
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{CE65817A-4561-4050-B72D-92A87CFBFCC3}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>SmilingGoat.WindowsLiveWriter.Flickr.Content_Files</td><td>{3CEEABD3-8704-4484-BB00-A22B6F3C8BF2}</td><td>INSTALLDIR</td><td>2</td><td/><td>smilinggoat.windowslivewrite1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>SmilingGoat.WindowsLiveWriter.Flickr.Primary_output</td><td>{8991EE74-1221-458F-9882-3E8DB9D4EA38}</td><td>INSTALLDIR</td><td>2</td><td/><td>smilinggoat.windowslivewrite</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
@@ -1861,6 +1862,7 @@
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s72">Component_</col>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>AlwaysInstall</td><td>SmilingGoat.WindowsLiveWriter.Flickr.Content_Files</td></row>
 		<row><td>AlwaysInstall</td><td>SmilingGoat.WindowsLiveWriter.Flickr.Primary_output</td></row>
 	</table>
 
@@ -1877,6 +1879,7 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>smilinggoat.windowslivewrite</td><td>SmilingGoat.WindowsLiveWriter.Flickr.Primary_output</td><td>SmilingGoat.WindowsLiveWriter.Flickr.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;SmilingGoat.WindowsLiveWriter.Flickr&gt;|Built</td><td>3</td><td/></row>
+		<row><td>smilinggoat.windowslivewrite1</td><td>SmilingGoat.WindowsLiveWriter.Flickr.Content_Files</td><td>SmilingGoat.WindowsLiveWriter.Flickr.Content Files</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;SmilingGoat.WindowsLiveWriter.Flickr&gt;|ContentFiles</td><td>3</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2022,6 +2025,7 @@
 		<col def="S0">HTTPLocation</col>
 		<col def="S0">Miscellaneous</col>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_E4970CE2_9CEF_4589_8AC9_4E5F8AA62857_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>SmilingGoat.WindowsLiveWriter.Flickr.Content_Files</td><td/><td/><td>_443DAEA7_641B_4662_8741_6D5BB0EC7D3C_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>SmilingGoat.WindowsLiveWriter.Flickr.Primary_output</td><td/><td/><td>_35C5830D_8A65_415F_A610_20C907A2C84E_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
@@ -3982,7 +3986,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{9CFCF6EE-BE93-456C-85C5-D6A6DEE3F060}</td></row>
 		<row><td>ISUSSignature</td><td>{57169F9A-A436-4D1E-8A92-34D442B4C27E}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4356,7 +4360,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{89CD8C6B-814F-4EF4-A03C-04B5131F9D5E}</td><td/></row>
 		<row><td>ProductName</td><td>Flickr4Writer</td><td/></row>
-		<row><td>ProductVersion</td><td>1.5.0.0</td><td/></row>
+		<row><td>ProductVersion</td><td>1.5.2.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
