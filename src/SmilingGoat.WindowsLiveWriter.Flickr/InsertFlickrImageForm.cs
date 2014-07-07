@@ -72,6 +72,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
         private ComboBox photosetList;
         private ToolStripStatusLabel authStatusLabel;
         private string _authToken;
+        private string _authTokenSecret;
         private string _authUserId;
         private string _authUserName;
         private FlickrContext _ctx;
@@ -781,6 +782,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
 
             authStatusLabel.Text = string.Format("Authorized ({0})", _authUserName);
             _authToken = context.FlickrAuthToken;
+            _authTokenSecret = context.FlickrAuthTokenSecret;
 
             // TODO: Consider threaded start of init
             System.Threading.Thread init = new System.Threading.Thread(new System.Threading.ThreadStart(EnsureFlickrNet));
@@ -793,12 +795,27 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             {
                 flickrProxy = FlickrPluginHelper.GetFlickrProxy();
                 flickrProxy.OAuthAccessToken = _authToken;
+                flickrProxy.OAuthAccessTokenSecret = _authTokenSecret;
             }
 
-            if (!string.IsNullOrEmpty(_authUserId) && !string.IsNullOrEmpty(_authUserName)) return;
+            if (!string.IsNullOrEmpty(_authToken) && !string.IsNullOrEmpty(_authTokenSecret)) return;
 
-            FlickrNet.FoundUser user = flickrProxy.TestLogin();
+            FoundUser user;
+
+            try
+            {
+                user = flickrProxy.TestLogin();
+            }
+            catch (OAuthException ex)
+            {
+                authStatusLabel.Text = @"Authorization is bad, try again";
+                MessageBox.Show(string.Format("Authorization is corrupt, please try again from Plugin Settings\n\n{0}", ex.Message),
+                    @"Failed Authorization", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             _authUserId = user.UserId;
+            _authUserName = user.UserName;
             textboxFlickrUserName.Text = user.UserName;
             _ctx.FlickrAuthUserName = user.UserName;
             _ctx.FlickrAuthUserId = _authUserId;
