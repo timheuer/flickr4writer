@@ -11,7 +11,7 @@ using log4net.Config;
 namespace SmilingGoat.WindowsLiveWriter.Flickr
 {
     #region Types
-    public enum ImageSize { Thumbnail, Small, Medium, Large };
+    public enum ImageSize { Thumbnail, Small, Medium, Large, Original };
     #endregion
 
     public class InsertFlickrImageForm : Form
@@ -187,6 +187,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusPictureCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusPage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.authStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip2 = new System.Windows.Forms.ToolTip(this.components);
             this.imageListing = new System.Windows.Forms.ImageList(this.components);
             this.retrievedImageList = new System.Windows.Forms.ListView();
@@ -203,7 +204,6 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             this.rdbTags = new System.Windows.Forms.RadioButton();
             this.rdbPhotoset = new System.Windows.Forms.RadioButton();
             this.rdbAllPhotos = new System.Windows.Forms.RadioButton();
-            this.authStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.verticalPadding)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.borderThickness)).BeginInit();
@@ -270,7 +270,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             "Thumbnail",
             "Small",
             "Medium",
-            "Large"});
+            "Large",
+            "Original"});
             this.dropDownImageSizes.Location = new System.Drawing.Point(493, 531);
             this.dropDownImageSizes.Name = "dropDownImageSizes";
             this.dropDownImageSizes.Size = new System.Drawing.Size(121, 21);
@@ -458,7 +459,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             this.buttonGetImages.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.buttonGetImages.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.toolTip1.SetToolTip(this.buttonGetImages, "Click here to search the Flickr user account for images.\r\n\r\nYou can enter tags to" +
-                    " filter (comma separated) or leave\r\nit blank to show all.");
+        " filter (comma separated) or leave\r\nit blank to show all.");
             this.buttonGetImages.Click += new System.EventHandler(this.buttonGetImages_Click);
             // 
             // infoButton
@@ -514,7 +515,7 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(221, 17);
+            this.statusLabel.Size = new System.Drawing.Size(252, 17);
             this.statusLabel.Spring = true;
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -531,6 +532,11 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             this.statusPage.Size = new System.Drawing.Size(110, 17);
             this.statusPage.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // authStatusLabel
+            // 
+            this.authStatusLabel.Name = "authStatusLabel";
+            this.authStatusLabel.Size = new System.Drawing.Size(0, 17);
+            // 
             // toolTip2
             // 
             this.toolTip2.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
@@ -545,9 +551,9 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             // retrievedImageList
             // 
             this.retrievedImageList.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.retrievedImageList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.retrievedImageList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.retrievedImageList.BackColor = System.Drawing.Color.White;
             this.retrievedImageList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.retrievedImageList.CausesValidation = false;
@@ -595,8 +601,8 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             this.imageProcessor.WorkerReportsProgress = true;
             this.imageProcessor.WorkerSupportsCancellation = true;
             this.imageProcessor.DoWork += new System.ComponentModel.DoWorkEventHandler(this.imageProcessor_DoWork);
-            this.imageProcessor.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.imageProcessor_RunWorkerCompleted);
             this.imageProcessor.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.imageProcessor_ProgressChanged);
+            this.imageProcessor.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.imageProcessor_RunWorkerCompleted);
             // 
             // groupUploadedBy
             // 
@@ -702,11 +708,6 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
             this.rdbAllPhotos.Text = "All Images";
             this.rdbAllPhotos.UseVisualStyleBackColor = true;
             this.rdbAllPhotos.Click += new System.EventHandler(this.searchType_Click);
-            // 
-            // authStatusLabel
-            // 
-            this.authStatusLabel.Name = "authStatusLabel";
-            this.authStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
             // InsertFlickrImageForm
             // 

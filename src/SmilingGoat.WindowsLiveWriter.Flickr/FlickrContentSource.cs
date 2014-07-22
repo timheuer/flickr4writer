@@ -79,6 +79,10 @@ namespace SmilingGoat.WindowsLiveWriter.Flickr
                 case ImageSize.Large:
                     url = p.LargeUrl;
                     break;
+
+                case ImageSize.Original:
+                    url = p.OriginalUrl;
+                    break;
             }
 
             return url;

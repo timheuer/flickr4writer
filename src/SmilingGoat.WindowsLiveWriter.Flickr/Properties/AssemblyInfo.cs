@@ -12,7 +12,7 @@ using System.Resources;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("67d89376-1fb8-4939-a374-81ce8a6ebbaa")]
-[assembly: AssemblyVersion("1.5.2.0")]
+[assembly: AssemblyVersion("1.5.3.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguage("en-us")]
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]

@@ -3746,6 +3746,7 @@
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>-350058674</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td>http://timheuer.com</td><td>0</td><td/><td>-350040242</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Tim Heuer</td><td>0</td><td/><td>-350058674</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>https://github.com/timheuer/flickr4writer/issues</td><td>0</td><td/><td>-1281218964</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-350058674</td></row>
 	</table>
 
@@ -3986,7 +3987,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{9CFCF6EE-BE93-456C-85C5-D6A6DEE3F060}</td></row>
 		<row><td>ISUSSignature</td><td>{57169F9A-A436-4D1E-8A92-34D442B4C27E}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewSystemSearch,viewInstallScriptStd,viewCustomActions,viewBillboards,viewTextMessages,viewUI</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4291,6 +4292,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="L0">Value</col>
 		<col def="S255">ISComments</col>
 		<row><td>ALLUSERS</td><td>1</td><td/></row>
+		<row><td>ARPHELPLINK</td><td>##ID_STRING3##</td><td/></row>
 		<row><td>ARPINSTALLLOCATION</td><td/><td/></row>
 		<row><td>ARPPRODUCTICON</td><td>ARPPRODUCTICON.exe</td><td/></row>
 		<row><td>ARPSIZE</td><td/><td/></row>
@@ -4358,9 +4360,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{89CD8C6B-814F-4EF4-A03C-04B5131F9D5E}</td><td/></row>
+		<row><td>ProductCode</td><td>{88206126-C4DC-4908-AFFE-5A1EA7953204}</td><td/></row>
 		<row><td>ProductName</td><td>Flickr4Writer</td><td/></row>
-		<row><td>ProductVersion</td><td>1.5.2.0</td><td/></row>
+		<row><td>ProductVersion</td><td>1.5.3.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
